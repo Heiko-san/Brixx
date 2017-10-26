@@ -5,10 +5,24 @@
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
+PowerFunctionsOutput	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
+c1_set	KEYWORD2
+c1_on	KEYWORD2
+c1_off	KEYWORD2
+c2_set	KEYWORD2
+c2_on	KEYWORD2
+c2_off	KEYWORD2
+set	KEYWORD2
+off	KEYWORD2
+c1_get	KEYWORD2
+c1_is_off	KEYWORD2
+c2_get	KEYWORD2
+c2_is_off	KEYWORD2
+is_off	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
@@ -17,3 +31,13 @@
 #######################################
 # Constants (LITERAL1)
 #######################################
+PF_OUT_A1	LITERAL1
+PF_OUT_A2	LITERAL1
+PF_OUT_A3	LITERAL1
+PF_OUT_A4	LITERAL1
+PF_OUT_A5	LITERAL1
+PF_OUT_A6	LITERAL1
+PF_OUT_A7	LITERAL1
+PF_OUT_D1	LITERAL1
+PF_OUT_D2	LITERAL1
+PF_OUT_D3	LITERAL1
