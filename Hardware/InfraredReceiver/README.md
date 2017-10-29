@@ -3,7 +3,7 @@
 ## About
 
 This is a classic infrared receiver circuit which will be used to receive commands from the LEGO Power Functions
-remote contols using the `PowerFunctionsIR` lib of this project.
+remote controls using the `PowerFunctionsIR` lib of this project.
 
 ![IR-receiver-foto](/Media/IR-receiver-foto.jpg)
 
@@ -24,7 +24,7 @@ remote contols using the `PowerFunctionsIR` lib of this project.
 
 ![IR-receiver-circuit](/Media/IR-receiver-circuit.png)
 
-The power supply of this circuit gets connected to Arduino `+5V` and `GND` pins. The output pin goes to `pin18` on Arduino Mega.
+The power supply of this circuit gets connected to Arduino `+5V` and `GND` pins. The output pin goes to `pin18` of Arduino Mega.
 
 > You can use any other `external interrupt` pin for this circuit's output line aswell.
 > Especially if you use a board other then Arduino Mega, you will have to do this.
@@ -38,6 +38,6 @@ have a look into the datasheet if in doubt.
 
 ## Test your circuit
 
-To check if your cicuit is working use the small sketch `IR_circuit_test.ino` in this folder.
+To check if your circuit is working use the small sketch [IR_circuit_test.ino](IR_circuit_test.ino) in this folder.
 Connect your circuit to the Arduino, upload the sketch and aim your LEGO Power Functions remote control to the receiver.
 When making any inputs on the remote control, the Arduino's LED on `pin13` should start flashing rather fast.
