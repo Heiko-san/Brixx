@@ -1,3 +1,4 @@
+# vim: noexpandtab
 #######################################
 # Syntax Coloring Map For Brixx
 #######################################
@@ -5,11 +6,20 @@
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
+# PowerFunctionsIR
+PowerFunctionsIR	KEYWORD1
+IRSample	KEYWORD1
+# PowerFunctionsOutput
 PowerFunctionsOutput	KEYWORD1
+PowerFunctionsMotor	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
+# PowerFunctionsIR
+init	KEYWORD2
+update	KEYWORD2
+# PowerFunctionsOutput
 c1_set	KEYWORD2
 c1_on	KEYWORD2
 c1_off	KEYWORD2
@@ -31,6 +41,9 @@ is_off	KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
+# PowerFunctionsIR
+generic_handler	LITERAL1
+# PowerFunctionsOutput
 PF_OUT_A1	LITERAL1
 PF_OUT_A2	LITERAL1
 PF_OUT_A3	LITERAL1
