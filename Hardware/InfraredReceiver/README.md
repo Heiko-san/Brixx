@@ -5,6 +5,8 @@
 This is a classic infrared receiver circuit which will be used to receive commands from the LEGO Power Functions
 remote contols using the `PowerFunctionsIR` lib of this project.
 
+![IR-receiver-foto](/Media/IR-receiver-foto.jpg)
+
 ## Parts
 
 | Amount | Part | Notes |
@@ -33,3 +35,9 @@ the input voltage. This 100nF capacitor should go as close as possible to the pi
 
 The circuit should work for any other IR receiver aswell, just watch out for the pinout since it may differ, you should
 have a look into the datasheet if in doubt.
+
+## Test your circuit
+
+To check if your cicuit is working use the small sketch `IR_circuit_test.ino` in this folder.
+Connect your circuit to the Arduino, upload the sketch and aim your LEGO Power Functions remote control to the receiver.
+When making any inputs on the remote control, the Arduino's LED on `pin13` should start flashing rather fast.
