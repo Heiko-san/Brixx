@@ -24,3 +24,7 @@
 #define PF_OUT_D1 42, 43
 #define PF_OUT_D2 40, 41
 #define PF_OUT_D3 38, 39
+
+// IR remote control
+#define IR_SAMPLE_INTERRUPT_PIN 18
+#define DEFAULT_STEP            37
