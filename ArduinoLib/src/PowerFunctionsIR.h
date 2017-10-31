@@ -195,7 +195,7 @@ struct Event {
 // Add an element to the queue.
 void enqueue(IRSample &sample);
 // Remove the first element from the queue.
-IRSample dequeue( void );
+Event* dequeue( void );
 
 /*
     User interface functions.

@@ -94,7 +94,7 @@ void enqueue(IRSample &sample) {
     }
 }
 
-IRSample dequeue( void ) {
+Event* dequeue( void ) {
     Event* p_event = head;
     /*
         If we remove the last element of the queue this is a critical action.
@@ -106,9 +106,7 @@ IRSample dequeue( void ) {
     if (!head) tail = 0;
     // Unlock ...
     interrupts();
-    IRSample sample_to_return = p_event->ir_event;
-    free(p_event);
-    return sample_to_return;
+    return p_event;
 }
 
 /*
@@ -126,7 +124,9 @@ void init( void ) {
 
 void update( void ) {
     while ( head ) {
-        IRSample ir = dequeue();
+        Event* p_event = dequeue();
+        IRSample ir = p_event->ir_event;
+        free(p_event);
         /*
             We can't rely on toggle bit only for redundancy check, since there are edge cases where it doesn't work.
             * First signal received could be 0 or 1.
