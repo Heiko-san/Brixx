@@ -306,7 +306,7 @@ Channel 1 red effected  ... Command: forward
 Channel 1 blue effected ... Command: backward
 Blue value changed, new value is: -255
  * 
- * Standard rc - let lose both
+ * Standard rc - release both
  * 
 Channel: 1  Subchannel: both  RCtype: standard  Data: 0x0  Command: Red: stop ... Blue: stop 
                                                                 ... Red value is: 0 ... Blue value is: 0
@@ -400,7 +400,7 @@ Channel 1 blue effected ... Command: stop
 Red value changed, new value is: 255
 Blue value changed, new value is: 0
  * 
- * Standard rc - let lose red
+ * Standard rc - release red
  * 
 Channel: 1  Subchannel: both  RCtype: standard  Data: 0x0  Command: Red: stop ... Blue: stop 
                                                                 ... Red value is: 0 ... Blue value is: 0
