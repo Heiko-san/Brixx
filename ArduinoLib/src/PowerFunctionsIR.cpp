@@ -17,9 +17,9 @@ namespace PowerFunctionsIR {
 // Sampling buffer.
 IRSample sample_value;
 // Remember last sample interrupt time.
-volatile unsigned long sample_micros_last = 0;
+volatile unsigned long sample_micros_last;
 // Position of the bit to sample next.
-volatile int8_t sample_position = 15;
+volatile int8_t sample_position;
 // Our interrupt address (derived from interrupt pin in init() and saved here).
 uint8_t interrupt_address;
 // Saved states for all channels, see ChannelState struct in header.
@@ -82,7 +82,7 @@ void sample_isr( void ) {
 /*                                                                                                                      
     Event processing.                                                                                                   
 */
-void enqueue(IRSample sample) {
+void enqueue(IRSample &sample) {
     Event* p_event = (Event*)malloc(sizeof(Event));
     p_event->ir_event = sample;
     p_event->next = 0;
@@ -115,7 +115,6 @@ IRSample dequeue( void ) {
     User interface functions.
 */
 void init( void ) {
-    sample_value.raw = 0;
     for (int i = 0; i < NUMBER_CHANNELS; i++) {
         channel_states[i].red.steps = DEFAULT_STEPS;
         channel_states[i].blue.steps = DEFAULT_STEPS;
@@ -185,7 +184,7 @@ void update( void ) {
             }
             // Event handlers triggered here.
             if (generic_handler) generic_handler(ir, channel_states[channel]);
-            if (red_effected_handler[channel]  && !ir.handled && ir.red_effected() )
+            if (red_effected_handler[channel] && !ir.handled && ir.red_effected())
                 red_effected_handler[channel](ir, channel_states[channel]);
             if (blue_effected_handler[channel] && !ir.handled && ir.blue_effected())
                 blue_effected_handler[channel](ir, channel_states[channel]);
@@ -200,7 +199,7 @@ void update( void ) {
 }
 
 bool set_steps(uint8_t channel, uint8_t steps_red, uint8_t steps_blue) {
-    if (channel > 3) return false;
+    if (channel >= NUMBER_CHANNELS) return false;
     if (steps_red < 1 || steps_red > 127) return false;
     if (steps_blue < 1 || steps_blue > 127) return false;
     channel_states[channel].red.steps = steps_red;

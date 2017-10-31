@@ -193,7 +193,7 @@ struct Event {
     Event* next;
 };
 // Add an element to the queue.
-void enqueue(IRSample sample);
+void enqueue(IRSample &sample);
 // Remove the first element from the queue.
 IRSample dequeue( void );
 
