@@ -41,3 +41,5 @@ have a look into the datasheet if in doubt.
 To check if your circuit is working use the small sketch [IR_circuit_test.ino](IR_circuit_test.ino) in this folder.
 Connect your circuit to the Arduino, upload the sketch and aim your LEGO Power Functions remote control to the receiver.
 When making any inputs on the remote control, the Arduino's LED on `pin13` should start flashing rather fast.
+
+If your circuit is working you can use it with the `PowerFunctionsIR` lib. In the examples folder of [ArduinoLib](/ArduinoLib/) you can find the [PowerFunctionsIR.ino](/ArduinoLib/examples/PowerFunctionsIR/PowerFunctionsIR.ino) example sketch which documents the usage of this library and also provides a sample output.
