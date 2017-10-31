@@ -137,67 +137,64 @@ void update( void ) {
             We still have an edge case: If first signal is on toggle 0 with data 0 and extended mode (0)
             we will miss it, but in reality extended mode isn't in use.
         */
-        if (ir.checksum_ok() && channel_states[ir.get_channel()].previous != ir.get_state_signature()) {
-            channel_states[ir.get_channel()].previous = ir.get_state_signature();
+        uint8_t channel = ir.get_channel();
+        if (ir.checksum_ok() && channel_states[channel].previous != ir.get_state_signature()) {
+            channel_states[channel].previous = ir.get_state_signature();
             // Values updated here.
-            int8_t old_red_value = channel_states[ir.get_channel()].red.actual_step;
+            int8_t old_red_value = channel_states[channel].red.actual_step;
             switch (ir.get_red_command()) {
                 case STOP:
                 case RESET_VALUE:
-                    channel_states[ir.get_channel()].red.actual_step = 0;
+                    channel_states[channel].red.actual_step = 0;
                     break;
                 case FORWARD:
-                    channel_states[ir.get_channel()].red.actual_step = channel_states[ir.get_channel()].red.steps;
+                    channel_states[channel].red.actual_step = channel_states[channel].red.steps;
                     break;
                 case BACKWARD:
-                    channel_states[ir.get_channel()].red.actual_step = -channel_states[ir.get_channel()].red.steps;
+                    channel_states[channel].red.actual_step = -channel_states[channel].red.steps;
                     break;
                 case INCREASE_VALUE:
-                    if (channel_states[ir.get_channel()].red.actual_step <
-                        channel_states[ir.get_channel()].red.steps)
-                            channel_states[ir.get_channel()].red.actual_step++;
+                    if (channel_states[channel].red.actual_step < channel_states[channel].red.steps)
+                        channel_states[channel].red.actual_step++;
                     break;
                 case DECREASE_VALUE:
-                    if (channel_states[ir.get_channel()].red.actual_step >
-                        -channel_states[ir.get_channel()].red.steps)
-                            channel_states[ir.get_channel()].red.actual_step--;
+                    if (channel_states[channel].red.actual_step > -channel_states[channel].red.steps)
+                        channel_states[channel].red.actual_step--;
                     break;
             }
-            int8_t old_blue_value = channel_states[ir.get_channel()].blue.actual_step;
+            int8_t old_blue_value = channel_states[channel].blue.actual_step;
             switch (ir.get_blue_command()) {
                 case STOP:
                 case RESET_VALUE:
-                    channel_states[ir.get_channel()].blue.actual_step = 0;
+                    channel_states[channel].blue.actual_step = 0;
                     break;
                 case FORWARD:
-                    channel_states[ir.get_channel()].blue.actual_step = channel_states[ir.get_channel()].blue.steps;
+                    channel_states[channel].blue.actual_step = channel_states[channel].blue.steps;
                     break;
                 case BACKWARD:
-                    channel_states[ir.get_channel()].blue.actual_step = -channel_states[ir.get_channel()].blue.steps;
+                    channel_states[channel].blue.actual_step = -channel_states[channel].blue.steps;
                     break;
                 case INCREASE_VALUE:
-                    if (channel_states[ir.get_channel()].blue.actual_step <
-                        channel_states[ir.get_channel()].blue.steps)
-                            channel_states[ir.get_channel()].blue.actual_step++;
+                    if (channel_states[channel].blue.actual_step < channel_states[channel].blue.steps)
+                        channel_states[channel].blue.actual_step++;
                     break;
                 case DECREASE_VALUE:
-                    if (channel_states[ir.get_channel()].blue.actual_step >
-                        -channel_states[ir.get_channel()].blue.steps) 
-                            channel_states[ir.get_channel()].blue.actual_step--;
+                    if (channel_states[channel].blue.actual_step > -channel_states[channel].blue.steps) 
+                        channel_states[channel].blue.actual_step--;
                     break;
             }
             // Event handlers triggered here.
-            if (generic_handler) generic_handler(ir, channel_states[ir.get_channel()]);
-            if (red_effected_handler[ir.get_channel()]  && !ir.handled && ir.red_effected() )
-                red_effected_handler[ir.get_channel()](ir, channel_states[ir.get_channel()]);
-            if (blue_effected_handler[ir.get_channel()] && !ir.handled && ir.blue_effected())
-                blue_effected_handler[ir.get_channel()](ir, channel_states[ir.get_channel()]);
-            if (red_changed_handler[ir.get_channel()] && !ir.handled
-                && old_red_value != channel_states[ir.get_channel()].red.actual_step)
-                    red_changed_handler[ir.get_channel()](ir, channel_states[ir.get_channel()]);
-            if (blue_changed_handler[ir.get_channel()] && !ir.handled
-                && old_blue_value != channel_states[ir.get_channel()].blue.actual_step)
-                    blue_changed_handler[ir.get_channel()](ir, channel_states[ir.get_channel()]);
+            if (generic_handler) generic_handler(ir, channel_states[channel]);
+            if (red_effected_handler[channel]  && !ir.handled && ir.red_effected() )
+                red_effected_handler[channel](ir, channel_states[channel]);
+            if (blue_effected_handler[channel] && !ir.handled && ir.blue_effected())
+                blue_effected_handler[channel](ir, channel_states[channel]);
+            if (red_changed_handler[channel] && !ir.handled
+                && old_red_value != channel_states[channel].red.actual_step)
+                    red_changed_handler[channel](ir, channel_states[channel]);
+            if (blue_changed_handler[channel] && !ir.handled
+                && old_blue_value != channel_states[channel].blue.actual_step)
+                    blue_changed_handler[channel](ir, channel_states[channel]);
         }
     }
 }

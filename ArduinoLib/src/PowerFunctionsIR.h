@@ -154,12 +154,12 @@ struct ChannelState {
     struct {
         int8_t actual_step;
         uint8_t steps: 7;
-        int16_t value() const { return map(actual_step, -steps, steps, -255, 255); } 
+        int16_t value( void ) const { return map(actual_step, -steps, steps, -255, 255); } 
     } red;
     struct {
         int8_t actual_step;
         uint8_t steps: 7; // max steps 127
-        int16_t value() const { return map(actual_step, -steps, steps, -255, 255); } 
+        int16_t value( void ) const { return map(actual_step, -steps, steps, -255, 255); } 
     } blue;
 };
 

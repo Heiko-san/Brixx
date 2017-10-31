@@ -14,8 +14,14 @@
 /*
     PowerFunctionsIR
 */
+// Interrupt pin for IR event sampling
+#ifndef IR_SAMPLE_INTERRUPT_PIN
 #define IR_SAMPLE_INTERRUPT_PIN 18
+#endif
+// Default steps count for pwm in-/decrease events
+#ifndef DEFAULT_STEPS
 #define DEFAULT_STEPS            7
+#endif
 
 /*
     PowerFunctionsOutput
