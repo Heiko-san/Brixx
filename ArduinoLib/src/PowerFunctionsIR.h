@@ -19,6 +19,7 @@
 
 namespace PowerFunctionsIR {
 
+#define NUMBER_CHANNELS                4
 // sample bit timings
 #define LOW_MIN                      316
 #define HIGH_MIN                     526
@@ -38,6 +39,12 @@ namespace PowerFunctionsIR {
 #define INCREASE_VALUE              0x40
 #define DECREASE_VALUE              0x50
 #define RESET_VALUE                 0x80
+// pseudo command if get_red/blue_command is queried for wrong channel
+#define NO_COMMAND                  0xFF
+// standard rc commands but for single channel -> get_red/blue_command
+#define STOP                        0x00
+#define FORWARD                     0x01
+#define BACKWARD                    0x02
 
  
 
@@ -68,12 +75,14 @@ struct IRSample {
     bool handled = false;
 
     // user interface
-    uint8_t get_channel() const { return channel + 1; } // convert channels to 1-4
+    uint8_t get_channel() const { return channel; }
     bool standard_rc() const { return combo_direct_mode(); }
     bool pwm_rc() const { return single_output_mode_pwm(); }
     bool red_effected() const { return standard_rc() ? true : get_single_output_port() == 0; } // standard rc always effects both
     bool blue_effected() const { return standard_rc() ? true : get_single_output_port() == 1; }
     uint8_t get_command() const { return standard_rc() ? data : data << 4; }
+    uint8_t get_red_command() const { return standard_rc() ? data & 0x3 : get_single_output_port() == 0 ? data << 4 : NO_COMMAND; }
+    uint8_t get_blue_command() const { return standard_rc() ? data >> 2 & 0x3 : get_single_output_port() == 1 ? data << 4 : NO_COMMAND; }
     /*uint8_t get_extened_channel() const { return (address << 2 | channel) + 1; } // convert channels to 1-8 (5-8 not used yet)*/
     // helper functions for internal use
     bool checksum_ok() const { return (0xF ^ nibble1 ^ nibble2 ^ nibble3) == nibble4; }
@@ -95,14 +104,18 @@ struct IRSample {
 struct ChannelState {
     uint8_t previous;
     struct {
-        int16_t value: 9;
-        uint8_t step: 7;
+        int8_t actual_step;
+        uint8_t steps: 7;
+        int16_t value() const { return map(actual_step, -steps, steps, -255, 255); } 
     } red;
     struct {
-        int16_t value: 9;
-        uint8_t step: 7;
+        int8_t actual_step;
+        uint8_t steps: 7; // max steps 127
+        int16_t value() const { return map(actual_step, -steps, steps, -255, 255); } 
     } blue;
 };
+
+bool set_steps(uint8_t channel, uint8_t steps_red, uint8_t steps_blue);
 
 /*
     Event processing
@@ -111,7 +124,12 @@ struct ChannelState {
 typedef void (*EventHandler)(IRSample&, ChannelState&);
 // event handlers - generic_handler is called for every type of event
 extern EventHandler generic_handler;
-extern ChannelState channel_states[4];
+extern EventHandler red_effected_handler[NUMBER_CHANNELS];
+extern EventHandler blue_effected_handler[NUMBER_CHANNELS];
+extern EventHandler red_changed_handler[NUMBER_CHANNELS];
+extern EventHandler blue_changed_handler[NUMBER_CHANNELS];
+// saved states for all 4 channels
+extern ChannelState channel_states[NUMBER_CHANNELS];
 
 // event queue element
 struct Event {

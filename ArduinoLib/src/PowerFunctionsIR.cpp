@@ -20,7 +20,16 @@ volatile int8_t sample_position = 15;
 // our interrupt address (derived from interrupt pin in init())
 uint8_t interrupt_address;
 // saved states for all 4 channels
-ChannelState channel_states[4];
+ChannelState channel_states[NUMBER_CHANNELS];
+// event handlers
+EventHandler generic_handler;
+EventHandler red_effected_handler[NUMBER_CHANNELS];
+EventHandler blue_effected_handler[NUMBER_CHANNELS];
+EventHandler red_changed_handler[NUMBER_CHANNELS];
+EventHandler blue_changed_handler[NUMBER_CHANNELS];
+// the queue's first and last element
+Event* head;
+Event* tail;
 
 void sample_isr( void ) {
     unsigned long micros_now = micros();
@@ -64,18 +73,13 @@ void idle_isr( void ) {
 void init( void ) {
     sample_value.raw = 0;
     for (int i = 0; i < 4; i++) {
-        channel_states[i].red.step = DEFAULT_STEP;
-        channel_states[i].blue.step = DEFAULT_STEP;
+        channel_states[i].red.steps = DEFAULT_STEPS;
+        channel_states[i].blue.steps = DEFAULT_STEPS;
     }
     pinMode(IR_SAMPLE_INTERRUPT_PIN, INPUT);
     interrupt_address = digitalPinToInterrupt(IR_SAMPLE_INTERRUPT_PIN);
     attachInterrupt(interrupt_address, idle_isr, FALLING);
 }
-
-EventHandler generic_handler;
-// the queue's first and last element
-Event* head;
-Event* tail;
 
 void enqueue(IRSample sample) {
     Event* p_event = (Event*)malloc(sizeof(Event));
@@ -118,12 +122,71 @@ void update( void ) {
             we still have an edge case: if first signal is on toggle 0 with data 0 and extended mode (0)
             we will miss it, but in reality extended mode isn't in use
         */
-        if (ir.checksum_ok() && channel_states[ir.channel].previous != ir.get_state_signature()) {
-            channel_states[ir.channel].previous = ir.get_state_signature();
-            if (generic_handler) generic_handler(ir, channel_states[ir.channel]);
-            //TODO if (other_handler && !ir.handled) other_handler(ir);
+        if (ir.checksum_ok() && channel_states[ir.get_channel()].previous != ir.get_state_signature()) {
+            channel_states[ir.get_channel()].previous = ir.get_state_signature();
+            // values updated here
+            int8_t old_red_value = channel_states[ir.get_channel()].red.actual_step;
+            switch (ir.get_red_command()) {
+                case STOP:
+                case RESET_VALUE:
+                    channel_states[ir.get_channel()].red.actual_step = 0;
+                    break;
+                case FORWARD:
+                    channel_states[ir.get_channel()].red.actual_step = channel_states[ir.get_channel()].red.steps;
+                    break;
+                case BACKWARD:
+                    channel_states[ir.get_channel()].red.actual_step = -channel_states[ir.get_channel()].red.steps;
+                    break;
+                case INCREASE_VALUE:
+                    if (channel_states[ir.get_channel()].red.actual_step < channel_states[ir.get_channel()].red.steps)
+                        channel_states[ir.get_channel()].red.actual_step++;
+                    break;
+                case DECREASE_VALUE:
+                    if (channel_states[ir.get_channel()].red.actual_step > -channel_states[ir.get_channel()].red.steps)
+                        channel_states[ir.get_channel()].red.actual_step--;
+                    break;
+            }
+            int8_t old_blue_value = channel_states[ir.get_channel()].blue.actual_step;
+            switch (ir.get_blue_command()) {
+                case STOP:
+                case RESET_VALUE:
+                    channel_states[ir.get_channel()].blue.actual_step = 0;
+                    break;
+                case FORWARD:
+                    channel_states[ir.get_channel()].blue.actual_step = channel_states[ir.get_channel()].blue.steps;
+                    break;
+                case BACKWARD:
+                    channel_states[ir.get_channel()].blue.actual_step = -channel_states[ir.get_channel()].blue.steps;
+                    break;
+                case INCREASE_VALUE:
+                    if (channel_states[ir.get_channel()].blue.actual_step < channel_states[ir.get_channel()].blue.steps)
+                        channel_states[ir.get_channel()].blue.actual_step++;
+                    break;
+                case DECREASE_VALUE:
+                    if (channel_states[ir.get_channel()].blue.actual_step > -channel_states[ir.get_channel()].blue.steps)
+                        channel_states[ir.get_channel()].blue.actual_step--;
+                    break;
+            }
+            // event handlers triggered here
+            if (generic_handler) generic_handler(ir, channel_states[ir.get_channel()]);
+            if (red_effected_handler[ir.get_channel()]  && !ir.handled && ir.red_effected() )  red_effected_handler[ir.get_channel()](ir, channel_states[ir.get_channel()]);
+            if (blue_effected_handler[ir.get_channel()] && !ir.handled && ir.blue_effected()) blue_effected_handler[ir.get_channel()](ir, channel_states[ir.get_channel()]);
+            if (red_changed_handler[ir.get_channel()] && !ir.handled && old_red_value != channel_states[ir.get_channel()].red.actual_step)
+                red_changed_handler[ir.get_channel()](ir, channel_states[ir.get_channel()]);
+            if (blue_changed_handler[ir.get_channel()] && !ir.handled && old_blue_value != channel_states[ir.get_channel()].blue.actual_step)
+                blue_changed_handler[ir.get_channel()](ir, channel_states[ir.get_channel()]);
         }
     }
+}
+
+bool set_steps(uint8_t channel, uint8_t steps_red, uint8_t steps_blue) {
+    if (channel < 1 || channel > 4) return false;
+    if (steps_red < 1 || steps_red > 127) return false;
+    if (steps_blue < 1 || steps_blue > 127) return false;
+    channel -= 1;
+    channel_states[channel].red.steps = steps_red;
+    channel_states[channel].blue.steps = steps_blue;
+    return true;
 }
 
 }; // end namespace
