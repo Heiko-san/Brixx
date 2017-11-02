@@ -143,43 +143,61 @@ void update( void ) {
             int8_t old_red_value = channel_states[channel].red.actual_step;
             switch (ir.get_red_command()) {
                 case STOP:
+                    if (channel_states[channel].red.alternative) break;
                 case RESET_VALUE:
                     channel_states[channel].red.actual_step = 0;
                     break;
                 case FORWARD:
-                    channel_states[channel].red.actual_step = channel_states[channel].red.steps;
+                    if (channel_states[channel].red.alternative) {
+                        channel_states[channel].red.actual_step ^= 0x01;
+                    } else {
+                        channel_states[channel].red.actual_step = channel_states[channel].red.steps;
+                    }
                     break;
                 case BACKWARD:
-                    channel_states[channel].red.actual_step = -channel_states[channel].red.steps;
+                    if (channel_states[channel].red.alternative) {
+                        channel_states[channel].red.actual_step ^= 0x02;
+                    } else {
+                        channel_states[channel].red.actual_step = -channel_states[channel].red.steps;
+                    }
                     break;
                 case INCREASE_VALUE:
                     if (channel_states[channel].red.actual_step < channel_states[channel].red.steps)
                         channel_states[channel].red.actual_step++;
                     break;
                 case DECREASE_VALUE:
-                    if (channel_states[channel].red.actual_step > -channel_states[channel].red.steps)
-                        channel_states[channel].red.actual_step--;
+                    if (channel_states[channel].red.actual_step > (channel_states[channel].red.alternative ? 0 :
+                        -channel_states[channel].red.steps)) channel_states[channel].red.actual_step--;
                     break;
             }
             int8_t old_blue_value = channel_states[channel].blue.actual_step;
             switch (ir.get_blue_command()) {
                 case STOP:
+                    if (channel_states[channel].blue.alternative) break;
                 case RESET_VALUE:
                     channel_states[channel].blue.actual_step = 0;
                     break;
                 case FORWARD:
-                    channel_states[channel].blue.actual_step = channel_states[channel].blue.steps;
+                    if (channel_states[channel].blue.alternative) {
+                        channel_states[channel].blue.actual_step ^= 0x01;
+                    } else {
+                        channel_states[channel].blue.actual_step = channel_states[channel].blue.steps;
+                    }
                     break;
                 case BACKWARD:
-                    channel_states[channel].blue.actual_step = -channel_states[channel].blue.steps;
+                    if (channel_states[channel].blue.alternative) {
+                        channel_states[channel].blue.actual_step ^= 0x02;
+                    } else {
+                        channel_states[channel].blue.actual_step = -channel_states[channel].blue.steps;
+                    }
                     break;
                 case INCREASE_VALUE:
                     if (channel_states[channel].blue.actual_step < channel_states[channel].blue.steps)
                         channel_states[channel].blue.actual_step++;
                     break;
                 case DECREASE_VALUE:
-                    if (channel_states[channel].blue.actual_step > -channel_states[channel].blue.steps) 
-                        channel_states[channel].blue.actual_step--;
+                    if (channel_states[channel].blue.actual_step > (channel_states[channel].blue.alternative ? 0 :
+                        -channel_states[channel].blue.steps)) channel_states[channel].blue.actual_step--;
                     break;
             }
             // Event handlers triggered here.
@@ -204,6 +222,13 @@ bool set_steps(uint8_t channel, uint8_t steps_red, uint8_t steps_blue) {
     if (steps_blue < 1 || steps_blue > 127) return false;
     channel_states[channel].red.steps = steps_red;
     channel_states[channel].blue.steps = steps_blue;
+    return true;
+}
+
+bool set_alternative_mode(uint8_t channel, bool red, bool blue) {
+    if (channel >= NUMBER_CHANNELS) return false;
+    channel_states[channel].red.alternative = red;
+    channel_states[channel].blue.alternative = blue;
     return true;
 }
 

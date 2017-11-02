@@ -154,12 +154,18 @@ struct ChannelState {
     struct {
         int8_t actual_step;
         uint8_t steps: 7;
-        int16_t value( void ) const { return map(actual_step, -steps, steps, -255, 255); } 
+        uint8_t alternative: 1;
+        int16_t value( void ) const { return alternative ? map(actual_step, 0, steps, 0, 255) : 
+            map(actual_step, -steps, steps, -255, 255); } 
+        uint8_t bit_switches( void ) const { return actual_step & 0x03; }
     } red;
     struct {
         int8_t actual_step;
         uint8_t steps: 7; // max steps 127
-        int16_t value( void ) const { return map(actual_step, -steps, steps, -255, 255); } 
+        uint8_t alternative: 1;
+        int16_t value( void ) const { return alternative ? map(actual_step, 0, steps, 0, 255) : 
+            map(actual_step, -steps, steps, -255, 255); } 
+        uint8_t bit_switches( void ) const { return actual_step & 0x03; }
     } blue;
 };
 
@@ -206,5 +212,7 @@ void init( void );
 void update( void );
 // This can be used to change the steps attributes of the channel's ChannelState.
 bool set_steps(uint8_t channel, uint8_t steps_red, uint8_t steps_blue);
+// This can be used to change value tracking to "alternative mode" (0-225 / 2 bit on-off-switch)
+bool set_alternative_mode(uint8_t channel, bool red, bool blue);
 
 }; // end namespace

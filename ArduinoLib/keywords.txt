@@ -29,7 +29,9 @@ get_command	KEYWORD2
 get_red_command	KEYWORD2
 get_blue_command	KEYWORD2
 set_steps	KEYWORD2
+set_alternative_mode	KEYWORD2
 value	KEYWORD2
+bit_switches	KEYWORD2
 # PowerFunctionsOutput
 c1_set	KEYWORD2
 c1_on	KEYWORD2

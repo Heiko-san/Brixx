@@ -271,6 +271,18 @@ void setup() {
    * ch.blue.value() within your event handlers.
    */
   bool success = PowerFunctionsIR::set_steps(0, 3, 20);
+  /*
+   * You can call this to set "alternative mode" for a channel and its subchannels, the arguments are the channel, here
+   * 3 (which is channel 4 on our remote control), followed by a flag for red and blue. True -> alternative mode on.
+   * In alternative mode tracked value will range between 0 - 255 instead of -255 - 255 for pwm control.
+   * For standard control STOP does nothing and FORWARD toggles bit 0x01 and BACKWARD toggles bit 0x02 of the tracked
+   * value. ch.red.bit_switches() and ch.blue.bit_switches() can be used instead of value() to get these 2 bits.
+   * So the values retrieved are 0 = both (FORWARD and BACKWARD) off, 1 = FORWARD on, 2 = BACKWARD on and 3 = both on.
+   * This can be used as 2 on-off switches per subchannel, hit FORWARD to activate bit 1, hit FORWARD again to
+   * deactivate it again (same for BACKWARD with bit 2). Query ch.red.bit_switches() & FORWARD -> is FORWARD (bit) on?
+   * Query ch.red.bit_switches() & BACKWARD -> is BACKWARD (bit) on?
+   */
+  success = PowerFunctionsIR::set_alternative_mode(3, true, false);
 }
 
 void loop() {
