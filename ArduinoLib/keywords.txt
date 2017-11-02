@@ -32,6 +32,7 @@ set_steps	KEYWORD2
 set_alternative_mode	KEYWORD2
 value	KEYWORD2
 bit_switches	KEYWORD2
+get_state_for_channel	KEYWORD2
 # PowerFunctionsOutput
 c1_set	KEYWORD2
 c1_on	KEYWORD2

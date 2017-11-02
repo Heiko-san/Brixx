@@ -214,5 +214,7 @@ void update( void );
 bool set_steps(uint8_t channel, uint8_t steps_red, uint8_t steps_blue);
 // This can be used to change value tracking to "alternative mode" (0-225 / 2 bit on-off-switch)
 bool set_alternative_mode(uint8_t channel, bool red, bool blue);
+// Get the ChannelState for channel.
+ChannelState get_state_for_channel(uint8_t channel);
 
 }; // end namespace

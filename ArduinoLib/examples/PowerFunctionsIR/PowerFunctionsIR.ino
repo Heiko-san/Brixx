@@ -13,6 +13,8 @@
  */
 #include <PowerFunctionsIR.h>
 
+#define LED_PIN 13
+
 /*
  * This signature is used for all event handlers.
  * IRSample represent the raw signal sample and offers methods and attributes to access the data.
@@ -117,11 +119,19 @@ void my_generic_handler(PowerFunctionsIR::IRSample &ir, PowerFunctionsIR::Channe
   Serial.print(" ... Blue value is: ");
   Serial.println(ch.blue.value());
   /*
-   * If you set this to true, the event is not passed to any further event handlers.
-   * If you want the event to be processed by further event handlers you don't have to care for this attribute, since
-   * it defaults to false.
+   * Get the ChannelState for any channel.
+   * Here we suppress further event handlers if channel 3 (which is channel 4 on our remote control) red FORWARD is
+   * on (in alternative mode).
+   * See set_alternative_mode(...) in setup() for further details.
    */
-  //ir.handled = true;
+  if (PowerFunctionsIR::get_state_for_channel(3).red.bit_switches() & FORWARD) {
+    /*
+     * If you set this to true, the event is not passed to any further event handlers.
+     * If you want the event to be processed by further event handlers you don't have to care for this attribute, since
+     * it defaults to false.
+     */
+    ir.handled = true;
+  }
 }
 
 /*
@@ -224,7 +234,17 @@ void my_ch1blue_changed_handler(PowerFunctionsIR::IRSample &ir, PowerFunctionsIR
   Serial.println(ch.blue.value());
 }
 
+void toggleLED(PowerFunctionsIR::IRSample &ir, PowerFunctionsIR::ChannelState &ch) {
+  /*
+   * Toggle pin13 LED by channel 3 (which is channel 4 on our remote control) red BACKWARD (in alternative mode).
+   * See set_alternative_mode(...) in setup() for further details.
+   */
+  digitalWrite(LED_PIN, ch.red.bit_switches() & BACKWARD);
+}
+
 void setup() {
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
   Serial.begin(9600);
   /*
    * Register your event handlers.
@@ -255,6 +275,7 @@ void setup() {
   PowerFunctionsIR::blue_effected_handler[0] = my_ch1blue_handler;
   PowerFunctionsIR::red_changed_handler[0] = my_ch1red_changed_handler;
   PowerFunctionsIR::blue_changed_handler[0] = my_ch1blue_changed_handler;
+  PowerFunctionsIR::red_changed_handler[3] = toggleLED;
   /*
    * Initialize PowerFunctionsIR.
    * This starts listening for IR signals and when successfully sampled a signal enqueue it for further processing.

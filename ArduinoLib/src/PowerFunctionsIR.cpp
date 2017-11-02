@@ -232,4 +232,8 @@ bool set_alternative_mode(uint8_t channel, bool red, bool blue) {
     return true;
 }
 
+ChannelState get_state_for_channel(uint8_t channel) {
+    return channel_states[channel];
+}
+
 }; // end namespace
